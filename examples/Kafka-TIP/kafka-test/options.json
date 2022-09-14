@@ -1,0 +1,28 @@
+{
+    "id":"kafka-workload",
+    "mem":512,
+    "container":{
+        "type":"MESOS",
+        "docker":{
+            "image":"rishabh96b/kafka-workload:2.4.1",
+            "forcePullImage":true
+        }
+    },
+    "networks":[
+        {
+            "mode":"host"
+        }
+    ],
+    "env":{
+        "JVM_MaxHeapSize":"512",
+        "KAFKA_CLIENT_MODE":"test",
+        "KAFKA_TOPIC":"securetest",
+        "NUM_TOPICS": "30",
+        "NUM_RECORDS": "1000",
+        "RECORD_SIZE": "50",
+        "PRODUCER_THROUGHPUT": "10",
+        "TEST_INTERVAL_SECONDS": "5",
+        "BOOTSTRAP_SERVERS": "broker.kafka.l4lb.thisdcos.directory:9092"
+    },
+    "cmd": "./opt/kafka/producer_test.sh"
+}
