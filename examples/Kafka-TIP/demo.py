@@ -3,8 +3,15 @@ from mininet.node import Controller
 from mininet.cli import CLI
 from mininet.log import info, setLogLevel
 from time import sleep
+from sys import argv
 
 setLogLevel('info')
+
+NUM_TOPICS = int(argv[1])
+NUM_RECORDS = int(argv[2])
+RECORD_SIZE = int(argv[3])
+PRODUCER_THROUGHPUT = int(argv[4])
+TEST_INTERVAL_SECONDS = int(argv[5])
 
 net = Containernet(controller=Controller)
 net.addController('c0')
@@ -30,36 +37,46 @@ broker = net.addDocker('broker',ip='10.0.0.252',
                        ports=[9092],
                        port_bindings={9092:9092})
 
+generator = net.addDocker('generator', ip='10.0.0.253',
+                            dimage='kafka-generator',
+                            environment={"BOOTSTRAP_SERVERS":"http://localhost:9092"})
 
-
-info('*** Adding producer and consumer\n')
-consumer = net.addDocker('consumer', ip='10.0.0.253',
-                         dimage="kafka-consumer")
-producer = net.addDocker('producer', ip='10.0.0.254',
-                         dimage="kafka-producer")
+# info('*** Adding producer and consumer\n')
+# consumer = net.addDocker('consumer', ip='10.0.0.253',
+#                          dimage="kafka-consumer")
+# producer = net.addDocker('producer', ip='10.0.0.254',
+#                          dimage="kafka-producer")
 
 
 info('*** Setup network\n')
 s1 = net.addSwitch('s1')
-s2 = net.addSwitch('s2')
 net.addLink(zookeeper, s1)
 net.addLink(broker, s1)
-net.addLink(broker, s2)
-net.addLink(consumer, s2)
-net.addLink(producer, s2)
+net.addLink(generator, s1)
+# net.addLink(consumer, s2)
+# net.addLink(producer, s2)
 
 net.start()
 
+info('*** Starting server\n')
+info("*** Waiting 50 sec to start server...\n")
+zookeeper.start()
+broker.start()
+
+sleep(50)
+
+info("*** Printing server IP:PORT to reach UI\n")
+info(zookeeper.cmd("netstat -an | grep 2181 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
+info(broker.cmd("netstat -an | grep 9092 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
+
+info('*** Starting perf-test\n')
+
+info(generator.cmd(f"python scripts/producer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_prod.csv"))
+info(generator.cmd(f"python scripts/consumer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_con.csv"))
+
 info('*** Starting to execute commands\n')
 
-broker.start()
 sleep(5)
-
-info('Execute: consumer.cmd("python consumer.py")\n')
-info(consumer.cmd("python consumer.py") + "\n")
-
-info('Execute: consumer.cmd("python consumer.py")\n')
-info(producer.cmd("python producer.py") + "\n")
 
 CLI(net)
 
