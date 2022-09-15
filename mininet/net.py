@@ -638,8 +638,8 @@ class Mininet( object ):
                 success = swclass.batchStartup( switches )
                 started.update( { s: s for s in success } )
         info( '\n' )
-        if self.waitConn:
-            self.waitConnected( self.waitConn )
+        #if self.waitConn:
+            #self.waitConnected( self.waitConn )
 
     def stop( self ):
         "Stop the controller(s), switches and hosts"

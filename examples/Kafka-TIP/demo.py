@@ -41,38 +41,30 @@ generator = net.addDocker('generator', ip='10.0.0.253',
                             dimage='kafka-generator',
                             environment={"BOOTSTRAP_SERVERS":"http://localhost:9092"})
 
-# info('*** Adding producer and consumer\n')
-# consumer = net.addDocker('consumer', ip='10.0.0.253',
-#                          dimage="kafka-consumer")
-# producer = net.addDocker('producer', ip='10.0.0.254',
-#                          dimage="kafka-producer")
-
 
 info('*** Setup network\n')
 s1 = net.addSwitch('s1')
 net.addLink(zookeeper, s1)
 net.addLink(broker, s1)
 net.addLink(generator, s1)
-# net.addLink(consumer, s2)
-# net.addLink(producer, s2)
 
 net.start()
 
 info('*** Starting server\n')
-info("*** Waiting 50 sec to start server...\n")
+info("*** Waiting 30 sec to start server...\n")
 zookeeper.start()
 broker.start()
 
-sleep(50)
+sleep(30)
 
-info("*** Printing server IP:PORT to reach UI\n")
-info(zookeeper.cmd("netstat -an | grep 2181 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
-info(broker.cmd("netstat -an | grep 9092 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
+# info("*** Printing server IP:PORT to reach UI\n")
+# info(zookeeper.cmd("netstat -an | grep 2181 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
+# info(broker.cmd("netstat -an | grep 9092 | grep ESTABLISHED | awk -F ' ' '{print $4}'"))
 
-info('*** Starting perf-test\n')
+info('*** Performing performance test\n')
 
-info(generator.cmd(f"python scripts/producer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_prod.csv"))
-info(generator.cmd(f"python scripts/consumer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_con.csv"))
+info(generator.cmd(f"./producer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_prod.csv"))
+info(generator.cmd(f"./consumer_test.sh {NUM_TOPICS} {NUM_RECORDS} {RECORD_SIZE} {PRODUCER_THROUGHPUT} {TEST_INTERVAL_SECONDS} -o output_con.csv"))
 
 info('*** Starting to execute commands\n')
 

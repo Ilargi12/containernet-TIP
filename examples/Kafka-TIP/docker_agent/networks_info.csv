@@ -1,0 +1,4 @@
+Name,Id,Created,Scope,Driver,EnableIPv6,Internal,Attachable,Ingress,ConfigOnly,timestamp,IPAM.Driver,IPAM.Options,IPAM.Config,ConfigFrom.Network
+host,2459416a37f9c21c057c7ec91752e0171f26933438b46e10b3b98ab7fb0fdbf3,2021-11-30T19:17:46.3074474+01:00,local,host,False,False,False,False,False,1663236621.0437276,default,,[],
+none,90f9c48db727d85add6a1d144a24659a900394d060ceb02090be90554bfc6c61,2021-11-30T19:17:46.0680918+01:00,local,null,False,False,False,False,False,1663236621.0437276,default,,[],
+bridge,912ad6661c25bf0a819380350787315be18da3695c399ddbdace24302bbf167d,2022-09-14T17:12:53.9543986+02:00,local,bridge,False,False,False,False,False,1663236621.0437276,default,,"[{'Subnet': '172.17.0.0/16', 'Gateway': '172.17.0.1'}]",,true,true,true,0.0.0.0,docker0,1500

@@ -13,7 +13,7 @@ Run the demo app:
 sudo python3 demo.py
 
 Remove containers:
-sudo docker rm mn.broker mn.zookeeper mn.consumer mn.producer
+sudo docker rm mn.broker mn.zookeeper mn.generator mn.consumer mn.producer
 
 Clean topo:
 sudo mn -c
